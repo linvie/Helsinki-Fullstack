@@ -3,11 +3,16 @@ import service from '../services/Phonebook'
 const Person = ({ persons, messageChange }) => {
     const deletePerson = (person) => {
         if (window.confirm(`Delete ${person.name}?`)) {
+            console.log('person', person.mongodb_id)
             service
-                .deletePerson(person.id)
+                .deletePerson(person.mongodb_id)
                 .then(response => {
                     console.log('delete', response)
                     messageChange(`Deleted ${person.name}`, false)
+                })
+                .catch(err => {
+                    console.log('error', err)
+                    messageChange(err.response.data.error, true)
                 })
         }
         else return

@@ -11,14 +11,15 @@ const PersonForm = ({ persons, setPersons, messageChange }) => {
         if (personsnames.includes(newName.toLowerCase())) {
             if (window.confirm(`${newName} is already added to phonebook,replace the old number with a new one?`)) {
                 service
-                    .update(persons.find(person => person.name.toLowerCase() === newName.toLowerCase()).id, { name: newName, number: newNumber })
+                    .update(persons.find(person => person.name.toLowerCase() === newName.toLowerCase()).mongodb_id, { name: newName, number: newNumber })
                     .then(response => {
                         console.log('update', response)
                         messageChange(`Updated ${newName}`, false)
                     })
                     .catch(err => {
-                        console.log('error', err)
-                        messageChange(`Information of ${newName} has already been removed from server`, true)
+                        console.log('Put error', err)
+                        messageChange(err.response.data.error, true)
+
                     })
                 return
             }
@@ -34,6 +35,9 @@ const PersonForm = ({ persons, setPersons, messageChange }) => {
             .then(response => {
                 setPersons(persons.concat(response))
                 messageChange(`Added ${newName}`, false)
+            }).catch(err => {
+                console.log('Post error', err.response.data)
+                messageChange(err.response.data.error, true)
             })
         setNewName('')
         setNewNumber('')
